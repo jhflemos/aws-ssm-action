@@ -4,7 +4,7 @@ import typescript from '@rollup/plugin-typescript'
 import json from '@rollup/plugin-json'
 
 const config = {
-  input: 'src/main.ts',
+  input: 'src/index.ts',
   output: {
     file: 'dist/index.cjs', // CommonJS for Node
     format: 'cjs',

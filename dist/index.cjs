@@ -44545,6 +44545,13 @@ async function run() {
     }
 }
 
+/**
+ * The entrypoint for the action. This file simply imports and runs the action's
+ * main logic.
+ */
+/* istanbul ignore next */
+run();
+
 class EventStreamSerde {
     marshaller;
     serializer;
@@ -48410,6 +48417,4 @@ var index = /*#__PURE__*/Object.freeze({
 	ValidationException$: ValidationException$,
 	__Client: Client
 });
-
-exports.run = run;
 //# sourceMappingURL=index.cjs.map
