@@ -11,6 +11,9 @@ inputs:
   ssm-path:
     description: AWS SSM Paramater store path to be retrieve
     required: true
+  region:
+    description: AWS region
+    required: true
 
 # Define your outputs here.
 #outputs:

@@ -1,5 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
+import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm'
 
 /**
  * The main function for the action.
@@ -9,7 +10,18 @@ import * as github from '@actions/github'
 export async function run(): Promise<void> {
   try {
     const ssmPath = core.getInput('ssm-path')
+    const awsRegion = core.getInput('region')
     core.info(`SSM Path: ${ssmPath}`)
+
+    const client = new SSMClient({ region: `${awsRegion}` })
+
+    const command = new GetParameterCommand({
+      Name: ssmPath,
+      WithDecryption: true
+    })
+
+    const result = await client.send(command)
+    core.info(`SSM Parameter Value: ${result.Parameter?.Value}`)
 
     // Get the current time and set it as an output variable
     //const time = new Date().toTimeString();
