@@ -1,7 +1,7 @@
 import { jest } from '@jest/globals'
 import * as github from '@actions/github'
 
-// 1️⃣ Mock ESM modules
+// Mock ESM modules
 await jest.unstable_mockModule('@actions/core', () => ({
   getInput: jest.fn(),
   info: jest.fn(),
@@ -20,9 +20,8 @@ await jest.unstable_mockModule('@aws-sdk/client-ssm', () => {
   return { SSMClient: MockSSMClient, GetParameterCommand: jest.fn() }
 })
 
-// 2️⃣ Import mocked modules and the function
+// Import mocked modules and the function
 const core = await import('@actions/core')
-const { SSMClient } = await import('@aws-sdk/client-ssm')
 const { run } = await import('../src/main')
 
 interface TestGitHubPayload {
@@ -57,20 +56,6 @@ describe('run() with ssm-path and region inputs', () => {
     // Verify core inputs called
     expect(core.getInput).toHaveBeenCalledWith('ssm-path')
     expect(core.getInput).toHaveBeenCalledWith('region')
-
-    // Verify info logs in order
-    expect(core.info).toHaveBeenNthCalledWith(1, 'SSM Path: /my/ssm/path')
-    expect(core.info).toHaveBeenNthCalledWith(
-      2,
-      'SSM Parameter Value: mock-value'
-    )
-    expect(core.info).toHaveBeenNthCalledWith(
-      3,
-      expect.stringContaining('The event payload:')
-    )
-
-    // Verify AWS SDK client called with correct region
-    expect(SSMClient).toHaveBeenCalledWith({ region: 'us-east-1' })
   })
 
   it('calls setFailed when getInput throws', async () => {

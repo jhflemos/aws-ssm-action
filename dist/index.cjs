@@ -44522,20 +44522,20 @@ async function run() {
     try {
         const ssmPath = coreExports.getInput('ssm-path');
         const awsRegion = coreExports.getInput('region');
-        coreExports.info(`SSM Path: ${ssmPath}`);
+        coreExports.warning(`SSM Path: ${ssmPath}`);
         const client = new SSMClient({ region: `${awsRegion}` });
         const command = new GetParameterCommand({
             Name: ssmPath,
             WithDecryption: true
         });
         const result = await client.send(command);
-        coreExports.info(`SSM Parameter Value: ${result.Parameter?.Value}`);
+        coreExports.warning(`SSM Parameter Value: ${result.Parameter?.Value}`);
         // Get the current time and set it as an output variable
         //const time = new Date().toTimeString();
         //core.setOutput("time", time);
         // Get the JSON webhook payload for the event that triggered the workflow
         const payload = JSON.stringify(githubExports.context.payload, undefined, 2);
-        coreExports.info(`The event payload: ${payload}`);
+        coreExports.warning(`The event payload: ${payload}`);
     }
     catch (error) {
         // Fail the workflow run if an error occurs
