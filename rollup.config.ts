@@ -6,7 +6,7 @@ const config = {
   input: 'src/index.ts',
   output: {
     esModule: true,
-    file: 'dist/index.js',
+    file: 'dist/index.cjs',
     format: 'cjs', // CommonJS is safest for Actions
     sourcemap: true
   },
