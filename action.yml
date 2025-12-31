@@ -15,6 +15,10 @@ inputs:
     description: AWS region
     required: true
 
+outputs:
+  value:
+    description: Your output description here
+
 # Define your outputs here.
 #outputs:
 #  time:

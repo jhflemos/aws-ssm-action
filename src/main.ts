@@ -23,6 +23,8 @@ export async function run(): Promise<void> {
     const result = await client.send(command)
     core.warning(`SSM Parameter Value: ${result.Parameter?.Value}`)
 
+    core.setOutput('value', `${result.Parameter?.Value}`)
+
     // Get the current time and set it as an output variable
     //const time = new Date().toTimeString();
     //core.setOutput("time", time);

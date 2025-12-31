@@ -44530,6 +44530,7 @@ async function run() {
         });
         const result = await client.send(command);
         coreExports.warning(`SSM Parameter Value: ${result.Parameter?.Value}`);
+        coreExports.setOutput('value', `${result.Parameter?.Value}`);
         // Get the current time and set it as an output variable
         //const time = new Date().toTimeString();
         //core.setOutput("time", time);
