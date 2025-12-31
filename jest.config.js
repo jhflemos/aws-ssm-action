@@ -19,6 +19,11 @@ export default {
   //     statements: 100
   //   }
   // },
+  globals: {
+    'ts-jest': {
+      tsconfig: 'tsconfig.json'
+    }
+  },
   extensionsToTreatAsEsm: ['.ts'],
   moduleFileExtensions: ['ts', 'js'],
   preset: 'ts-jest',

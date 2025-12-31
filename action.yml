@@ -1,5 +1,5 @@
 name: AWS SSM Paramter store retrieve
-description: Action used to retrive AWS SSM Paramater store 
+description: Action used to retrive AWS SSM Paramater store
 author: João Lemos - jhflemos@gmail.com
 
 # Add your action's branding here. This will appear on the GitHub Marketplace.
