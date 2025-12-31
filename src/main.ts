@@ -11,7 +11,7 @@ export async function run(): Promise<void> {
   try {
     const ssmPath = core.getInput('ssm-path')
     const awsRegion = core.getInput('region')
-    core.warning(`SSM Path: ${ssmPath}`)
+    core.info(`SSM Path: ${ssmPath}`)
 
     const client = new SSMClient({ region: `${awsRegion}` })
 
@@ -21,7 +21,7 @@ export async function run(): Promise<void> {
     })
 
     const result = await client.send(command)
-    core.warning(`SSM Parameter Value: ${result.Parameter?.Value}`)
+    core.info(`SSM Parameter Value: ${result.Parameter?.Value}`)
 
     core.setOutput('value', `${result.Parameter?.Value}`)
 
@@ -31,7 +31,7 @@ export async function run(): Promise<void> {
 
     // Get the JSON webhook payload for the event that triggered the workflow
     const payload = JSON.stringify(github.context.payload, undefined, 2)
-    core.warning(`The event payload: ${payload}`)
+    core.info(`The event payload: ${payload}`)
   } catch (error) {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) core.setFailed(error.message)
