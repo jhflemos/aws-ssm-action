@@ -48423,6 +48423,7 @@ async function run() {
         awsRegion = coreExports.getInput('region');
         const ssmPath = coreExports.getInput('ssm-path');
         const withDecryption = coreExports.getInput('withDecryption') === 'true';
+        const exportToEnv = coreExports.getInput('exportToEnv') === 'true';
         const output = coreExports.getInput('output');
         const fileName = coreExports.getInput('fileName');
         const debug = coreExports.getInput('debug') === 'true';
@@ -48434,6 +48435,10 @@ async function run() {
             ...(parameterFilters && { ParameterFilters: parameterFilters })
         };
         const allParameters = await getAllParameters(input);
+        // Export to GitHub Action environment to be used like env.ABC
+        if (exportToEnv) {
+            exportToGitHubEnv(allParameters);
+        }
         // Write SSM parameter file
         if (output !== '') {
             generateSSMParamatersFile(output, fileName, allParameters);
@@ -48448,6 +48453,14 @@ async function run() {
         // Fail the workflow run if an error occurs
         if (error instanceof Error)
             coreExports.setFailed(error.message);
+    }
+}
+function exportToGitHubEnv(allParameters) {
+    for (const p of allParameters) {
+        const nameParts = p.Name.split('/');
+        const name = nameParts[nameParts.length - 1];
+        const key = name.replace(/[/\s]/g, '_').toUpperCase();
+        coreExports.exportVariable(key, p.Value);
     }
 }
 function parseParameterFilter(rawParameterFilters) {

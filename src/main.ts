@@ -25,6 +25,7 @@ export async function run(): Promise<void> {
     awsRegion = core.getInput('region')
     const ssmPath = core.getInput('ssm-path')
     const withDecryption = core.getInput('withDecryption') === 'true'
+    const exportToEnv = core.getInput('exportToEnv') === 'true'
     const output = core.getInput('output')
     const fileName = core.getInput('fileName')
     const debug = core.getInput('debug') === 'true'
@@ -42,6 +43,11 @@ export async function run(): Promise<void> {
 
     const allParameters = await getAllParameters(input)
 
+    // Export to GitHub Action environment to be used like env.ABC
+    if (exportToEnv) {
+      exportToGitHubEnv(allParameters)
+    }
+
     // Write SSM parameter file
     if (output !== '') {
       generateSSMParamatersFile(output, fileName, allParameters)
@@ -55,6 +61,15 @@ export async function run(): Promise<void> {
   } catch (error) {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) core.setFailed(error.message)
+  }
+}
+
+function exportToGitHubEnv(allParameters: SimpleParameter[]) {
+  for (const p of allParameters) {
+    const nameParts = p.Name.split('/')
+    const name = nameParts[nameParts.length - 1]
+    const key = name.replace(/[/\s]/g, '_').toUpperCase()
+    core.exportVariable(key, p.Value)
   }
 }
 
