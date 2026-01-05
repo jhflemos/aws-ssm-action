@@ -69,9 +69,13 @@ export async function run(): Promise<void> {
 
     core.info(`Fetched ${allParameters.length} parameters`)
 
-    core.info(`Values: ${allParameters}`)
+    allParameters.forEach((param, index) => {
+      core.info(
+        `Parameter ${index + 1}: Name=${param.Name} Value=${param.Value}`
+      )
+    })
 
-    // Example: output all values as JSON
+    // Set output for workflow
     core.setOutput('values', JSON.stringify(allParameters))
 
     if (debug) {

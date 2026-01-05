@@ -44586,8 +44586,10 @@ async function run() {
             nextToken = result.NextToken;
         } while (nextToken);
         coreExports.info(`Fetched ${allParameters.length} parameters`);
-        coreExports.info(`Values: ${allParameters}`);
-        // Example: output all values as JSON
+        allParameters.forEach((param, index) => {
+            coreExports.info(`Parameter ${index + 1}: Name=${param.Name} Value=${param.Value}`);
+        });
+        // Set output for workflow
         coreExports.setOutput('values', JSON.stringify(allParameters));
         if (debug) {
             // Get the JSON webhook payload for the event that triggered the workflow
