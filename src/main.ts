@@ -69,6 +69,10 @@ function exportToGitHubEnv(allParameters: SimpleParameter[]) {
     const nameParts = p.Name.split('/')
     const name = nameParts[nameParts.length - 1]
     const key = name.replace(/[/\s]/g, '_').toUpperCase()
+
+    if (p.Type === 'SecureString') {
+      core.setSecret(p.Value)
+    }
     core.exportVariable(key, p.Value)
   }
 }
@@ -122,7 +126,8 @@ async function getAllParameters(
 
   const simpleParameters: SimpleParameter[] = allParameters.map((param) => ({
     Name: param.Name ?? '',
-    Value: param.Value ?? ''
+    Value: param.Value ?? '',
+    Type: param.Type ?? ''
   }))
 
   return simpleParameters

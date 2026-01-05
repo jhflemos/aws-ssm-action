@@ -48460,6 +48460,9 @@ function exportToGitHubEnv(allParameters) {
         const nameParts = p.Name.split('/');
         const name = nameParts[nameParts.length - 1];
         const key = name.replace(/[/\s]/g, '_').toUpperCase();
+        if (p.Type === 'SecureString') {
+            coreExports.setSecret(p.Value);
+        }
         coreExports.exportVariable(key, p.Value);
     }
 }
@@ -48499,7 +48502,8 @@ async function getAllParameters(input) {
     coreExports.info(`Fetched ${allParameters.length} parameters`);
     const simpleParameters = allParameters.map((param) => ({
         Name: param.Name ?? '',
-        Value: param.Value ?? ''
+        Value: param.Value ?? '',
+        Type: param.Type ?? ''
     }));
     return simpleParameters;
 }

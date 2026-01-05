@@ -10,4 +10,5 @@ export type GetParametersByPathInput = {
 export interface SimpleParameter {
   Name: string
   Value: string
+  Type: string
 }
