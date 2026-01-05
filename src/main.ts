@@ -1,5 +1,7 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
+import * as fs from 'fs'
+import * as path from 'path'
 import {
   SSMClient,
   GetParametersByPathCommand,
@@ -69,10 +71,14 @@ export async function run(): Promise<void> {
 
     core.info(`Fetched ${allParameters.length} parameters`)
 
-    core.info(JSON.stringify(allParameters))
+    // Write JSON file
+    const filePath = path.join(process.cwd(), 'env.json')
+    fs.writeFileSync(filePath, JSON.stringify(allParameters, null, 2), {
+      encoding: 'utf-8'
+    })
 
-    // Set output for workflow
-    core.setOutput('values', JSON.stringify(allParameters))
+    core.info(`Saved ${allParameters.length} parameters to ${filePath}`)
+    // Write JSON file
 
     if (debug) {
       // Get the JSON webhook payload for the event that triggered the workflow

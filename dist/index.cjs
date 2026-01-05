@@ -37,6 +37,26 @@ var node_path = require('node:path');
 var promises = require('node:fs/promises');
 var process$1 = require('process');
 
+function _interopNamespaceDefault(e) {
+	var n = Object.create(null);
+	if (e) {
+		Object.keys(e).forEach(function (k) {
+			if (k !== 'default') {
+				var d = Object.getOwnPropertyDescriptor(e, k);
+				Object.defineProperty(n, k, d.get ? d : {
+					enumerable: true,
+					get: function () { return e[k]; }
+				});
+			}
+		});
+	}
+	n.default = e;
+	return Object.freeze(n);
+}
+
+var require$$1__namespace$1 = /*#__PURE__*/_interopNamespaceDefault(require$$1);
+var require$$1__namespace = /*#__PURE__*/_interopNamespaceDefault(require$$1$5);
+
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
 function getDefaultExportFromCjs (x) {
@@ -44586,9 +44606,13 @@ async function run() {
             nextToken = result.NextToken;
         } while (nextToken);
         coreExports.info(`Fetched ${allParameters.length} parameters`);
-        coreExports.info(JSON.stringify(allParameters));
-        // Set output for workflow
-        coreExports.setOutput('values', JSON.stringify(allParameters));
+        // Write JSON file
+        const filePath = require$$1__namespace.join(process.cwd(), 'env.json');
+        require$$1__namespace$1.writeFileSync(filePath, JSON.stringify(allParameters, null, 2), {
+            encoding: 'utf-8'
+        });
+        coreExports.info(`Saved ${allParameters.length} parameters to ${filePath}`);
+        // Write JSON file
         if (debug) {
             // Get the JSON webhook payload for the event that triggered the workflow
             const payload = JSON.stringify(githubExports.context.payload, undefined, 2);
