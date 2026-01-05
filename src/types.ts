@@ -7,7 +7,7 @@ export type GetParametersByPathInput = {
   ParameterFilters?: ParameterStringFilter[]
 }
 
-export type SimpleParameter = {
+export interface SimpleParameter {
   Name: string
   Value: string
 }

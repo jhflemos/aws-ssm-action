@@ -2,8 +2,9 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import * as fs from 'fs'
 import * as path from 'path'
-import { SimpleParameter } from './types'
-import { GetParametersByPathInput } from './types'
+import yaml from 'js-yaml'
+import { SimpleParameter } from './types.js'
+import { GetParametersByPathInput } from './types.js'
 
 import {
   SSMClient,
@@ -123,6 +124,13 @@ function generateSSMParamatersFile(
       fs.writeFileSync(filePath, JSON.stringify(allParameters, null, 2), {
         encoding: 'utf-8'
       })
+      break
+    }
+    case 'yaml': {
+      const yamlData = yaml.dump(allParameters) // Convert JSON to YAML
+      const filePath = path.join(process.cwd(), `${fileName}.yaml`)
+
+      fs.writeFileSync(filePath, yamlData, { encoding: 'utf-8' })
       break
     }
     default: {
