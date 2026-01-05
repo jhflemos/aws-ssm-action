@@ -18,6 +18,7 @@ export async function run(): Promise<void> {
     const ssmPath = core.getInput('ssm-path')
     const withDecryption = core.getInput('withDecryption') === 'true'
     const rawParameterFilters = core.getInput('parameterFilters')
+    const debug = core.getInput('debug') === 'true'
 
     let parameterFilters: ParameterStringFilter[] | undefined
 
@@ -71,9 +72,11 @@ export async function run(): Promise<void> {
     // Example: output all values as JSON
     core.setOutput('value', JSON.stringify(allParameters))
 
-    // Get the JSON webhook payload for the event that triggered the workflow
-    const payload = JSON.stringify(github.context.payload, undefined, 2)
-    core.info(`The event payload: ${payload}`)
+    if (debug) {
+      // Get the JSON webhook payload for the event that triggered the workflow
+      const payload = JSON.stringify(github.context.payload, undefined, 2)
+      core.info(`The event payload: ${payload}`)
+    }
   } catch (error) {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) core.setFailed(error.message)

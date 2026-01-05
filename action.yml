@@ -22,6 +22,10 @@ inputs:
   region:
     description: AWS region
     required: true
+  debug:
+    description: Active debug mode
+    required: false
+    default: 'false'
 
 outputs:
   value:

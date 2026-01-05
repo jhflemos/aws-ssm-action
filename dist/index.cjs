@@ -44549,17 +44549,18 @@ async function run() {
         const ssmPath = coreExports.getInput('ssm-path');
         const withDecryption = coreExports.getInput('withDecryption') === 'true';
         const rawParameterFilters = coreExports.getInput('parameterFilters');
+        const debug = coreExports.getInput('debug') === 'true';
         let parameterFilters;
         if (rawParameterFilters) {
             try {
                 const parsed = JSON.parse(rawParameterFilters);
                 if (!Array.isArray(parsed)) {
-                    throw new Error('parameter-filters must be a JSON array');
+                    throw new Error('parameterFilters must be a JSON array');
                 }
                 parameterFilters = parsed;
             }
             catch (err) {
-                coreExports.setFailed(`Invalid parameter-filters JSON: ${err.message}`);
+                coreExports.setFailed(`Invalid parameteFilters JSON: ${err.message}`);
                 process.exit(1);
             }
         }
@@ -44587,9 +44588,11 @@ async function run() {
         coreExports.info(`Fetched ${allParameters.length} parameters`);
         // Example: output all values as JSON
         coreExports.setOutput('value', JSON.stringify(allParameters));
-        // Get the JSON webhook payload for the event that triggered the workflow
-        const payload = JSON.stringify(githubExports.context.payload, undefined, 2);
-        coreExports.info(`The event payload: ${payload}`);
+        if (debug) {
+            // Get the JSON webhook payload for the event that triggered the workflow
+            const payload = JSON.stringify(githubExports.context.payload, undefined, 2);
+            coreExports.info(`The event payload: ${payload}`);
+        }
     }
     catch (error) {
         // Fail the workflow run if an error occurs
