@@ -44586,9 +44586,7 @@ async function run() {
             nextToken = result.NextToken;
         } while (nextToken);
         coreExports.info(`Fetched ${allParameters.length} parameters`);
-        allParameters.forEach((param, index) => {
-            coreExports.info(`Parameter ${index + 1}: Name=${param.Name} Value=${param.Value}`);
-        });
+        coreExports.info(JSON.stringify(allParameters));
         // Set output for workflow
         coreExports.setOutput('values', JSON.stringify(allParameters));
         if (debug) {
