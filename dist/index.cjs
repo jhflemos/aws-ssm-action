@@ -44586,8 +44586,9 @@ async function run() {
             nextToken = result.NextToken;
         } while (nextToken);
         coreExports.info(`Fetched ${allParameters.length} parameters`);
+        coreExports.info(`Values: ${allParameters}`);
         // Example: output all values as JSON
-        coreExports.setOutput('value', JSON.stringify(allParameters));
+        coreExports.setOutput('values', JSON.stringify(allParameters));
         if (debug) {
             // Get the JSON webhook payload for the event that triggered the workflow
             const payload = JSON.stringify(githubExports.context.payload, undefined, 2);

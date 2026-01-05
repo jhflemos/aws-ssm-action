@@ -69,8 +69,10 @@ export async function run(): Promise<void> {
 
     core.info(`Fetched ${allParameters.length} parameters`)
 
+    core.info(`Values: ${allParameters}`)
+
     // Example: output all values as JSON
-    core.setOutput('value', JSON.stringify(allParameters))
+    core.setOutput('values', JSON.stringify(allParameters))
 
     if (debug) {
       // Get the JSON webhook payload for the event that triggered the workflow

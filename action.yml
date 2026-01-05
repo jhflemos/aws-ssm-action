@@ -28,7 +28,7 @@ inputs:
     default: 'false'
 
 outputs:
-  value:
+  values:
     description: Your output description here
 
 runs:
