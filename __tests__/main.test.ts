@@ -17,7 +17,7 @@ await jest.unstable_mockModule('@aws-sdk/client-ssm', () => {
     send: sendMock
   }))
 
-  return { SSMClient: MockSSMClient, GetParameterCommand: jest.fn() }
+  return { SSMClient: MockSSMClient, GetParametersByPathCommand: jest.fn() }
 })
 
 // Import mocked modules and the function
@@ -29,7 +29,7 @@ interface TestGitHubPayload {
   issue: { number: number }
 }
 
-describe('run() with ssm-path and region inputs', () => {
+describe('run() with inputs', () => {
   beforeEach(() => {
     jest.clearAllMocks()
 
@@ -46,6 +46,8 @@ describe('run() with ssm-path and region inputs', () => {
     core.getInput.mockImplementation((name: string) => {
       if (name === 'ssm-path') return '/my/ssm/path'
       if (name === 'region') return 'us-east-1'
+      if (name === 'withDecryption') return 'true'
+      if (name === 'parameterFilters') return ''
       return ''
     })
 
@@ -56,6 +58,8 @@ describe('run() with ssm-path and region inputs', () => {
     // Verify core inputs called
     expect(core.getInput).toHaveBeenCalledWith('ssm-path')
     expect(core.getInput).toHaveBeenCalledWith('region')
+    expect(core.getInput).toHaveBeenCalledWith('withDecryption')
+    expect(core.getInput).toHaveBeenCalledWith('parameterFilters')
   })
 
   it('calls setFailed when getInput throws', async () => {

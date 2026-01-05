@@ -41006,7 +41006,7 @@ const commonParams$4 = {
     UseDualStack: { type: "builtInParams", name: "useDualstackEndpoint" },
 };
 
-var version$2 = "3.958.0";
+var version$2 = "3.962.0";
 var packageInfo$2 = {
 	version: version$2};
 
@@ -43496,9 +43496,9 @@ const _DPL = "DocumentPermissionLimit";
 const _DTa = "DataType";
 const _DVLE = "DocumentVersionLimitExceeded";
 const _FNAE = "FeatureNotAvailableException";
-const _GP = "GetParameter";
-const _GPR = "GetParameterRequest";
-const _GPRe = "GetParameterResult";
+const _GPBP = "GetParametersByPath";
+const _GPBPR = "GetParametersByPathRequest";
+const _GPBPRe = "GetParametersByPathResult";
 const _HLLEE = "HierarchyLevelLimitExceededException";
 const _HTME = "HierarchyTypeMismatchException";
 const _IAE = "InvalidAggregatorException";
@@ -43557,14 +43557,17 @@ const _ITNE = "InvalidTypeNameException";
 const _ITn = "InvalidTag";
 const _ITnv = "InvalidTarget";
 const _IU = "InvalidUpdate";
+const _K$1 = "Key";
 const _LMD = "LastModifiedDate";
 const _LTi = "LimitType";
 const _Li = "Limit";
 const _M = "Message";
 const _MDSE = "MaxDocumentSizeExceeded";
+const _MR = "MaxResults";
 const _MRPDE = "MalformedResourcePolicyDocumentException";
 const _N = "Name";
 const _NLSE = "NoLongerSupportedException";
+const _NT = "NextToken";
 const _OIADE = "OpsItemAccessDeniedException";
 const _OIAEE = "OpsItemAlreadyExistsException";
 const _OICE = "OpsItemConflictException";
@@ -43580,17 +43583,24 @@ const _OMKLEE = "OpsMetadataKeyLimitExceededException";
 const _OMLEE = "OpsMetadataLimitExceededException";
 const _OMNFE = "OpsMetadataNotFoundException";
 const _OMTMUE = "OpsMetadataTooManyUpdatesException";
+const _Opt = "Option";
+const _P$1 = "Parameters";
 const _PAE = "ParameterAlreadyExists";
+const _PF = "ParameterFilters";
+const _PL = "ParameterList";
 const _PLE = "ParameterLimitExceeded";
 const _PLEE = "PoliciesLimitExceededException";
 const _PMVLE = "ParameterMaxVersionLimitExceeded";
 const _PNF = "ParameterNotFound";
 const _PNa = "ParameterNames";
 const _PPME = "ParameterPatternMismatchException";
+const _PSF = "ParameterStringFilter";
+const _PSFL = "ParameterStringFilterList";
 const _PSPV = "PSParameterValue";
 const _PVLLE = "ParameterVersionLabelLimitExceeded";
 const _PVNF = "ParameterVersionNotFound";
 const _Par = "Parameter";
+const _Path = "Path";
 const _QC = "QuotaCode";
 const _RCea = "ReasonCode";
 const _RDSAEE = "ResourceDataSyncAlreadyExistsException";
@@ -43609,6 +43619,7 @@ const _RPNFE = "ResourcePolicyNotFoundException";
 const _RT$2 = "ResourceType";
 const _RTes = "ResourceTypes";
 const _RU = "ResourceUri";
+const _Rec = "Recursive";
 const _SCe = "ServiceCode";
 const _SN$1 = "SyncName";
 const _SQEE = "ServiceQuotaExceededException";
@@ -43636,6 +43647,7 @@ const _UPT = "UnsupportedParameterType";
 const _UPTn = "UnsupportedPlatformType";
 const _V$1 = "Value";
 const _VE$1 = "ValidationException";
+const _Va = "Values";
 const _Ve = "Version";
 const _WD = "WithDecryption";
 const _aQE$1 = "awsQueryError";
@@ -43796,15 +43808,15 @@ var FeatureNotAvailableException$ = [-3, n0$4, _FNAE,
     [0]
 ];
 TypeRegistry.for(n0$4).registerError(FeatureNotAvailableException$, FeatureNotAvailableException);
-var GetParameterRequest$ = [3, n0$4, _GPR,
+var GetParametersByPathRequest$ = [3, n0$4, _GPBPR,
     0,
-    [_N, _WD],
-    [0, 2]
+    [_Path, _Rec, _PF, _WD, _MR, _NT],
+    [0, 2, () => ParameterStringFilterList, 2, 1, 0]
 ];
-var GetParameterResult$ = [3, n0$4, _GPRe,
+var GetParametersByPathResult$ = [3, n0$4, _GPBPRe,
     0,
-    [_Par],
-    [[() => Parameter$, 0]]
+    [_P$1, _NT],
+    [[() => ParameterList, 0], 0]
 ];
 var HierarchyLevelLimitExceededException$ = [-3, n0$4, _HLLEE,
     { [_aQE$1]: [`HierarchyLevelLimitExceededException`, 400], [_e$4]: _c$4 },
@@ -44291,6 +44303,11 @@ var ParameterPatternMismatchException$ = [-3, n0$4, _PPME,
     [0]
 ];
 TypeRegistry.for(n0$4).registerError(ParameterPatternMismatchException$, ParameterPatternMismatchException);
+var ParameterStringFilter$ = [3, n0$4, _PSF,
+    0,
+    [_K$1, _Opt, _Va],
+    [0, 0, 64 | 0]
+];
 var ParameterVersionLabelLimitExceeded$ = [-3, n0$4, _PVLLE,
     { [_aQE$1]: [`ParameterVersionLabelLimitExceeded`, 400], [_e$4]: _c$4 },
     [_m$3],
@@ -44497,19 +44514,26 @@ var ValidationException$$1 = [-3, n0$4, _VE$1,
 TypeRegistry.for(n0$4).registerError(ValidationException$$1, ValidationException$1);
 var SSMServiceException$ = [-3, _sm$2, "SSMServiceException", 0, [], []];
 TypeRegistry.for(_sm$2).registerError(SSMServiceException$, SSMServiceException);
-var GetParameter$ = [9, n0$4, _GP,
-    0, () => GetParameterRequest$, () => GetParameterResult$
+var ParameterList = [1, n0$4, _PL,
+    0, [() => Parameter$,
+        0]
+];
+var ParameterStringFilterList = [1, n0$4, _PSFL,
+    0, () => ParameterStringFilter$
+];
+var GetParametersByPath$ = [9, n0$4, _GPBP,
+    0, () => GetParametersByPathRequest$, () => GetParametersByPathResult$
 ];
 
-class GetParameterCommand extends Command
+class GetParametersByPathCommand extends Command
     .classBuilder()
     .ep(commonParams$4)
     .m(function (Command, cs, config, o) {
     return [getEndpointPlugin(config, Command.getEndpointParameterInstructions())];
 })
-    .s("AmazonSSM", "GetParameter", {})
-    .n("SSMClient", "GetParameterCommand")
-    .sc(GetParameter$)
+    .s("AmazonSSM", "GetParametersByPath", {})
+    .n("SSMClient", "GetParametersByPathCommand")
+    .sc(GetParametersByPath$)
     .build() {
 }
 
@@ -44520,20 +44544,49 @@ class GetParameterCommand extends Command
  */
 async function run() {
     try {
-        const ssmPath = coreExports.getInput('ssm-path');
+        // Imputs from action's call
         const awsRegion = coreExports.getInput('region');
-        coreExports.info(`SSM Path: ${ssmPath}`);
-        const client = new SSMClient({ region: `${awsRegion}` });
-        const command = new GetParameterCommand({
-            Name: ssmPath,
-            WithDecryption: true
-        });
-        const result = await client.send(command);
-        coreExports.info(`SSM Parameter Value: ${result.Parameter?.Value}`);
-        coreExports.setOutput('value', `${result.Parameter?.Value}`);
-        // Get the current time and set it as an output variable
-        //const time = new Date().toTimeString();
-        //core.setOutput("time", time);
+        const ssmPath = coreExports.getInput('ssm-path');
+        const withDecryption = coreExports.getInput('withDecryption') === 'true';
+        const rawParameterFilters = coreExports.getInput('parameterFilters');
+        let parameterFilters;
+        if (rawParameterFilters) {
+            try {
+                const parsed = JSON.parse(rawParameterFilters);
+                if (!Array.isArray(parsed)) {
+                    throw new Error('parameter-filters must be a JSON array');
+                }
+                parameterFilters = parsed;
+            }
+            catch (err) {
+                coreExports.setFailed(`Invalid parameter-filters JSON: ${err.message}`);
+                process.exit(1);
+            }
+        }
+        const input = {
+            Path: ssmPath,
+            WithDecryption: withDecryption,
+            Recursive: true,
+            ...(parameterFilters && { ParameterFilters: parameterFilters })
+        };
+        const client = new SSMClient({ region: awsRegion });
+        let nextToken;
+        const allParameters = [];
+        do {
+            const commandInput = {
+                ...input,
+                NextToken: nextToken
+            };
+            const command = new GetParametersByPathCommand(commandInput);
+            const result = await client.send(command);
+            if (result.Parameters) {
+                allParameters.push(...result.Parameters);
+            }
+            nextToken = result.NextToken;
+        } while (nextToken);
+        coreExports.info(`Fetched ${allParameters.length} parameters`);
+        // Example: output all values as JSON
+        coreExports.setOutput('value', JSON.stringify(allParameters));
         // Get the JSON webhook payload for the event that triggered the workflow
         const payload = JSON.stringify(githubExports.context.payload, undefined, 2);
         coreExports.info(`The event payload: ${payload}`);

@@ -1,6 +1,10 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm'
+import {
+  SSMClient,
+  GetParametersByPathCommand,
+  ParameterStringFilter
+} from '@aws-sdk/client-ssm'
 
 /**
  * The main function for the action.
@@ -9,25 +13,63 @@ import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm'
  */
 export async function run(): Promise<void> {
   try {
-    const ssmPath = core.getInput('ssm-path')
+    // Imputs from action's call
     const awsRegion = core.getInput('region')
-    core.info(`SSM Path: ${ssmPath}`)
+    const ssmPath = core.getInput('ssm-path')
+    const withDecryption = core.getInput('withDecryption') === 'true'
+    const rawParameterFilters = core.getInput('parameterFilters')
 
-    const client = new SSMClient({ region: `${awsRegion}` })
+    let parameterFilters: ParameterStringFilter[] | undefined
 
-    const command = new GetParameterCommand({
-      Name: ssmPath,
-      WithDecryption: true
-    })
+    if (rawParameterFilters) {
+      try {
+        const parsed = JSON.parse(rawParameterFilters)
 
-    const result = await client.send(command)
-    core.info(`SSM Parameter Value: ${result.Parameter?.Value}`)
+        if (!Array.isArray(parsed)) {
+          throw new Error('parameterFilters must be a JSON array')
+        }
 
-    core.setOutput('value', `${result.Parameter?.Value}`)
+        parameterFilters = parsed as ParameterStringFilter[]
+      } catch (err) {
+        core.setFailed(
+          `Invalid parameteFilters JSON: ${(err as Error).message}`
+        )
+        process.exit(1)
+      }
+    }
 
-    // Get the current time and set it as an output variable
-    //const time = new Date().toTimeString();
-    //core.setOutput("time", time);
+    const input = {
+      Path: ssmPath,
+      WithDecryption: withDecryption,
+      Recursive: true,
+      ...(parameterFilters && { ParameterFilters: parameterFilters })
+    }
+
+    const client = new SSMClient({ region: awsRegion })
+
+    let nextToken: string | undefined
+    const allParameters = []
+
+    do {
+      const commandInput = {
+        ...input,
+        NextToken: nextToken
+      }
+
+      const command = new GetParametersByPathCommand(commandInput)
+      const result = await client.send(command)
+
+      if (result.Parameters) {
+        allParameters.push(...result.Parameters)
+      }
+
+      nextToken = result.NextToken
+    } while (nextToken)
+
+    core.info(`Fetched ${allParameters.length} parameters`)
+
+    // Example: output all values as JSON
+    core.setOutput('value', JSON.stringify(allParameters))
 
     // Get the JSON webhook payload for the event that triggered the workflow
     const payload = JSON.stringify(github.context.payload, undefined, 2)

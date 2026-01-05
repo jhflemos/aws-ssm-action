@@ -9,8 +9,16 @@ branding:
 
 inputs:
   ssm-path:
-    description: AWS SSM Paramater store path to be retrieve
+    description: SSM Paramater store path to be retrieve
     required: true
+  withDecryption:
+    description: SSM Paramater store description to be retrieve
+    required: false
+    default: 'false'
+  parameterFilters:
+    description: Filters to limit the request results
+    required: false
+    default: ''
   region:
     description: AWS region
     required: true
@@ -18,11 +26,6 @@ inputs:
 outputs:
   value:
     description: Your output description here
-
-# Define your outputs here.
-#outputs:
-#  time:
-#    description: Your output description here
 
 runs:
   using: node24
