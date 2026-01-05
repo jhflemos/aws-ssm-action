@@ -19,6 +19,18 @@ inputs:
     description: Filters to limit the request results
     required: false
     default: ''
+  exportToEnv:
+    description: Export SSM parameters as GitHub Actions environment
+    required: false
+    default: 'true'
+  output:
+    description: Output type to create the file with SSM parameters
+    required: false
+    default: ''
+  fileName:
+    description: Name for the output file
+    required: false
+    default: 'env'
   region:
     description: AWS region
     required: true

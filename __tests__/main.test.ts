@@ -1,28 +1,35 @@
 import { jest } from '@jest/globals'
 import * as github from '@actions/github'
 
-// Mock ESM modules
-await jest.unstable_mockModule('@actions/core', () => ({
-  getInput: jest.fn(),
-  info: jest.fn(),
-  setFailed: jest.fn()
-}))
+let core: typeof import('@actions/core')
+let run: () => Promise<void>
 
-await jest.unstable_mockModule('@aws-sdk/client-ssm', () => {
-  const sendMock = jest
-    .fn()
-    .mockResolvedValue({ Parameter: { Value: 'mock-value' } })
-
-  const MockSSMClient = jest.fn().mockImplementation(() => ({
-    send: sendMock
+// Wrap mocks and imports in beforeAll
+beforeAll(async () => {
+  // Mock ESM modules
+  await jest.unstable_mockModule('@actions/core', () => ({
+    getInput: jest.fn(),
+    info: jest.fn(),
+    setFailed: jest.fn()
   }))
 
-  return { SSMClient: MockSSMClient, GetParametersByPathCommand: jest.fn() }
-})
+  await jest.unstable_mockModule('@aws-sdk/client-ssm', () => {
+    const sendMock = jest.fn().mockResolvedValue({
+      Parameters: [{ Name: '/my/ssm/path', Value: 'mock-value' }]
+    })
 
-// Import mocked modules and the function
-const core = await import('@actions/core')
-const { run } = await import('../src/main')
+    const MockSSMClient = jest.fn().mockImplementation(() => ({
+      send: sendMock
+    }))
+
+    return { SSMClient: MockSSMClient, GetParametersByPathCommand: jest.fn() }
+  })
+
+  // Import mocked modules and the function
+  core = await import('@actions/core')
+  const mod = await import('../src/main')
+  run = mod.run
+})
 
 interface TestGitHubPayload {
   action: string

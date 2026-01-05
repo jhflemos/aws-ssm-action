@@ -44557,6 +44557,7 @@ class GetParametersByPathCommand extends Command
     .build() {
 }
 
+let awsRegion = '';
 /**
  * The main function for the action.
  *
@@ -44565,54 +44566,24 @@ class GetParametersByPathCommand extends Command
 async function run() {
     try {
         // Imputs from action's call
-        const awsRegion = coreExports.getInput('region');
+        awsRegion = coreExports.getInput('region');
         const ssmPath = coreExports.getInput('ssm-path');
         const withDecryption = coreExports.getInput('withDecryption') === 'true';
-        const rawParameterFilters = coreExports.getInput('parameterFilters');
+        const output = coreExports.getInput('output');
+        const fileName = coreExports.getInput('fileName');
         const debug = coreExports.getInput('debug') === 'true';
-        let parameterFilters;
-        if (rawParameterFilters) {
-            try {
-                const parsed = JSON.parse(rawParameterFilters);
-                if (!Array.isArray(parsed)) {
-                    throw new Error('parameterFilters must be a JSON array');
-                }
-                parameterFilters = parsed;
-            }
-            catch (err) {
-                coreExports.setFailed(`Invalid parameteFilters JSON: ${err.message}`);
-                process.exit(1);
-            }
-        }
+        const parameterFilters = parseParameterFilter(coreExports.getInput('parameterFilters'));
         const input = {
             Path: ssmPath,
             WithDecryption: withDecryption,
             Recursive: true,
             ...(parameterFilters && { ParameterFilters: parameterFilters })
         };
-        const client = new SSMClient({ region: awsRegion });
-        let nextToken;
-        const allParameters = [];
-        do {
-            const commandInput = {
-                ...input,
-                NextToken: nextToken
-            };
-            const command = new GetParametersByPathCommand(commandInput);
-            const result = await client.send(command);
-            if (result.Parameters) {
-                allParameters.push(...result.Parameters);
-            }
-            nextToken = result.NextToken;
-        } while (nextToken);
-        coreExports.info(`Fetched ${allParameters.length} parameters`);
-        // Write JSON file
-        const filePath = require$$1__namespace.join(process.cwd(), 'env.json');
-        require$$1__namespace$1.writeFileSync(filePath, JSON.stringify(allParameters, null, 2), {
-            encoding: 'utf-8'
-        });
-        coreExports.info(`Saved ${allParameters.length} parameters to ${filePath}`);
-        // Write JSON file
+        const allParameters = await getAllParameters(input);
+        // Write SSM parameter file
+        if (output !== '') {
+            generateSSMParamatersFile(output, fileName, allParameters);
+        }
         if (debug) {
             // Get the JSON webhook payload for the event that triggered the workflow
             const payload = JSON.stringify(githubExports.context.payload, undefined, 2);
@@ -44623,6 +44594,61 @@ async function run() {
         // Fail the workflow run if an error occurs
         if (error instanceof Error)
             coreExports.setFailed(error.message);
+    }
+}
+function parseParameterFilter(rawParameterFilters) {
+    let parameterFilters;
+    if (rawParameterFilters) {
+        try {
+            const parsed = JSON.parse(rawParameterFilters);
+            if (!Array.isArray(parsed)) {
+                throw new Error('parameterFilters must be a JSON array');
+            }
+            parameterFilters = parsed;
+        }
+        catch (err) {
+            coreExports.setFailed(`Invalid parameteFilters JSON: ${err.message}`);
+            process.exit(1);
+        }
+    }
+    return parameterFilters;
+}
+async function getAllParameters(input) {
+    const client = new SSMClient({ region: awsRegion });
+    let nextToken;
+    const allParameters = [];
+    do {
+        const commandInput = {
+            ...input,
+            NextToken: nextToken
+        };
+        const command = new GetParametersByPathCommand(commandInput);
+        const result = await client.send(command);
+        if (result.Parameters) {
+            allParameters.push(...result.Parameters);
+        }
+        nextToken = result.NextToken;
+    } while (nextToken);
+    coreExports.info(`Fetched ${allParameters.length} parameters`);
+    const simpleParameters = allParameters.map((param) => ({
+        Name: param.Name ?? '',
+        Value: param.Value ?? ''
+    }));
+    return simpleParameters;
+}
+function generateSSMParamatersFile(output, fileName, allParameters) {
+    switch (output) {
+        case 'json': {
+            const filePath = require$$1__namespace.join(process.cwd(), `${fileName}.json`);
+            require$$1__namespace$1.writeFileSync(filePath, JSON.stringify(allParameters, null, 2), {
+                encoding: 'utf-8'
+            });
+            break;
+        }
+        default: {
+            coreExports.info(`No output file was generated!`);
+            break;
+        }
     }
 }
 
